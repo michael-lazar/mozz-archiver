@@ -18,16 +18,16 @@ CONCURRENT_REQUESTS_PER_IP = 1
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 10
+DOWNLOAD_DELAY = 2
 
 # The maximum response size (in bytes) that downloader will download.
 DOWNLOAD_MAXSIZE = 1073741824  # 1024 MB
 
 # The response size (in bytes) that downloader will start to warn.
-DOWNLOAD_WARNSIZE = 1  # 32 MB
+DOWNLOAD_WARNSIZE = 33554432  # 32 MB
 
 # The amount of time (in secs) that the downloader will wait before timing out.
-DOWNLOAD_TIMEOUT = 180
+DOWNLOAD_TIMEOUT = 60
 
 # Disable cookies (enabled by default)
 COOKIES_ENABLED = False
@@ -43,15 +43,11 @@ DOWNLOAD_HANDLERS = {
 
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-SPIDER_MIDDLEWARES = {
-    'mozz_archiver.middlewares.MozzArchiverSpiderMiddleware': 543,
-}
+SPIDER_MIDDLEWARES = {}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-DOWNLOADER_MIDDLEWARES = {
-    'mozz_archiver.middlewares.MozzArchiverDownloaderMiddleware': 543,
-}
+DOWNLOADER_MIDDLEWARES = {}
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
@@ -59,7 +55,5 @@ EXTENSIONS = {}
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-ITEM_PIPELINES = {
-    'mozz_archiver.pipelines.MozzArchiverPipeline': 300,
-}
+ITEM_PIPELINES = {}
 
