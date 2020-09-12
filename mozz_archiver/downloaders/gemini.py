@@ -7,10 +7,12 @@ from scrapy.http import Response
 from twisted.internet import reactor
 from twisted.internet.defer import Deferred
 from twisted.internet.endpoints import SSL4ClientEndpoint, connectProtocol
-from twisted.internet.error import ConnectionDone
+from twisted.internet.error import ConnectionDone, TimeoutError
+from twisted.internet.protocol import connectionDone
 from twisted.internet.ssl import CertificateOptions, TLSVersion
 from twisted.protocols.basic import LineReceiver
 from twisted.protocols.policies import TimeoutMixin
+from twisted.python.failure import Failure
 
 from mozz_archiver.response.gemini import GeminiMapResponse
 
@@ -65,10 +67,10 @@ class GeminiDownloadHandler:
             remote_host,
             remote_port,
             self.context_factory,
-            timeout=timeout
+            timeout=10
         )
 
-        protocol = GeminiClientProtocol(request, maxsize, warnsize)
+        protocol = GeminiClientProtocol(request, maxsize, warnsize, timeout)
         connectProtocol(endpoint, protocol)
         return protocol.finished
 
@@ -97,10 +99,11 @@ class GeminiClientProtocol(LineReceiver, TimeoutMixin):
         '62': 403,
     }
 
-    def __init__(self, request, maxsize, warnsize):
+    def __init__(self, request, maxsize, warnsize, timeout):
         self.request = request
         self.maxsize = maxsize
         self.warnsize = warnsize
+        self.timout = timeout
 
         self.reached_warnsize = False
 
@@ -119,7 +122,14 @@ class GeminiClientProtocol(LineReceiver, TimeoutMixin):
         self.transport.abortConnection()
 
     def connectionMade(self):
+        self.setTimeout(self.timout)
         self.sendLine(self.request_url.encode("utf-8"))
+
+    def timeoutConnection(self):
+        logger.error(
+            f"Getting {self.request} took longer than {self.timout} seconds."
+        )
+        self.transport.abortConnection()
 
     def lineReceived(self, line):
         self.response_header = line
@@ -146,7 +156,9 @@ class GeminiClientProtocol(LineReceiver, TimeoutMixin):
                 f"({self.warnsize}) in request {self.request}."
             )
 
-    def connectionLost(self, reason=ConnectionDone):
+    def connectionLost(self, reason=connectionDone):
+        self.setTimeout(None)
+
         if self.finished.called:
             return
 
