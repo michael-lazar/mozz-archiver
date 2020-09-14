@@ -3,18 +3,16 @@ import time
 from io import BytesIO
 from urllib.parse import urldefrag, urlparse
 
-from scrapy.http import Response
 from twisted.internet import reactor
 from twisted.internet.defer import Deferred
 from twisted.internet.endpoints import SSL4ClientEndpoint, connectProtocol
-from twisted.internet.error import ConnectionDone, TimeoutError
+from twisted.internet.error import ConnectionDone
 from twisted.internet.protocol import connectionDone
 from twisted.internet.ssl import CertificateOptions, TLSVersion
 from twisted.protocols.basic import LineReceiver
 from twisted.protocols.policies import TimeoutMixin
-from twisted.python.failure import Failure
 
-from mozz_archiver.response.gemini import GeminiMapResponse
+from mozz_archiver.response.gemini import GeminiResponse
 
 logger = logging.getLogger(__name__)
 
@@ -76,28 +74,6 @@ class GeminiDownloadHandler:
 
 
 class GeminiClientProtocol(LineReceiver, TimeoutMixin):
-
-    # Map Gemini -> HTTP for interoperability with scrapy middleware
-    HTTP_CODE_MAP = {
-        '10': 200,
-        '11': 200,
-        '20': 200,
-        '30': 302,
-        '31': 301,
-        '40': 500,
-        '41': 503,
-        '42': 500,
-        '43': 502,
-        '44': 429,
-        '50': 400,
-        '51': 404,
-        '52': 410,
-        '53': 400,
-        '59': 400,
-        '60': 403,
-        '61': 403,
-        '62': 403,
-    }
 
     def __init__(self, request, maxsize, warnsize, timeout):
         self.request = request
@@ -174,53 +150,10 @@ class GeminiClientProtocol(LineReceiver, TimeoutMixin):
         """
         Convert the response data into a pseudo-HTTP response.
         """
-        header = self.response_header.decode('utf-8')
-        header_parts = header.strip().split(maxsplit=1)
-        if len(header_parts) == 0:
-            status, meta = '', ''
-        elif len(header_parts) == 1:
-            status, meta = header_parts[0], ''
-        else:
-            status, meta = header_parts
-
-        headers = {
-            'gemini-header': header,
-            'gemini-status': status,
-            'gemini-meta': meta,
-        }
-        if status.startswith('2'):
-            headers['Content-Type'] = meta
-        elif status.startswith('3'):
-            headers['Location'] = meta
-        elif status == '44':
-            headers['Retry-After'] = meta
-
-        http_status = self.HTTP_CODE_MAP.get(status, 400)
-
-        if status.startswith('2') and meta.startswith('text/gemini'):
-            meta_keys = {}
-            for param in meta.split(';'):
-                parts = param.strip().split('=', maxsplit=1)
-                if len(parts) == 2:
-                    meta_keys[parts[0].lower()] = parts[1]
-
-            response = GeminiMapResponse(
-                self.request_url,
-                headers=headers,
-                status=http_status,
-                body=self.response_body.getvalue(),
-                certificate=self.transport.getPeerCertificate(),
-                ip_address=self.transport.getPeer().host,
-                encoding=meta_keys.get('charset', 'UTF-8')
-            )
-        else:
-            response = Response(
-                self.request_url,
-                headers=headers,
-                status=http_status,
-                body=self.response_body.getvalue(),
-                certificate=self.transport.getPeerCertificate(),
-                ip_address=self.transport.getPeer().host
-            )
-
-        return response
+        return GeminiResponse(
+            self.request_url,
+            gemini_header=self.response_header,
+            body=self.response_body.getvalue(),
+            certificate=self.transport.getPeerCertificate(),
+            ip_address=self.transport.getPeer().host,
+        )
