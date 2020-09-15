@@ -24,10 +24,12 @@ WARC_DESCRIPTION = None
 WARC_FORMAT = 'WARC file version 1.1'
 WARC_CONFORMS_TO = 'http://iipc.github.io/warc-specifications/specifications/warc-format/warc-1.1/'
 
-FEEDS = {
-    'stdout:': {
-        'format': 'warc',
-    }
+EXTENSIONS = {
+    'mozz_archiver.extensions.warc.WARCExporter': 0,
+}
+
+DOWNLOAD_HANDLERS = {
+    'gemini': 'mozz_archiver.downloaders.gemini.GeminiDownloadHandler',
 }
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
@@ -53,12 +55,3 @@ COOKIES_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
 TELNETCONSOLE_ENABLED = True
-
-DOWNLOAD_HANDLERS = {
-    'gemini': 'mozz_archiver.downloaders.gemini.GeminiDownloadHandler',
-}
-
-FEED_EXPORTERS = {
-    'warc': 'mozz_archiver.exporters.warc.WARCItemExporter'
-}
-
