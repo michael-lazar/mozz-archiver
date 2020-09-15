@@ -3,8 +3,8 @@ import scrapy
 
 class GeminiSpider(scrapy.Spider):
     name = 'gemini'
-    allowed_domains = ['localhost']
-    start_urls = ['gemini://localhost']
+    allowed_domains = ['mozz.us']
+    start_urls = ['gemini://mozz.us']
 
     static_routes = [
         "/robots.txt",

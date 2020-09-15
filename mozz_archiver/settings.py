@@ -14,8 +14,22 @@ USER_AGENT = f'mozz-archiver (+{PROJECT_URL})'
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
 
+# Print WARC export to stdout instead of a file
+WARC_DEBUG = True
+
+# Enable gzip compression on generated WARC files
 WARC_GZIP = False
-WARC_HOSTNAME = "mozz.us"
+
+# Max size in bytes of an individual WARC file (for file rotation)
+WARC_FILE_MAX_SIZE = 2014 ** 3  # 1 GB
+
+# Prefix to append to the beginning of WARC filenames
+WARC_FILE_PREFIX = 'test'
+
+# Directory to save WARC files
+WARC_FILE_DIRECTORY = '.'
+
+# These params will be placed into the generated "warcinfo" record
 WARC_VERSION = "WARC/1.1"
 WARC_OPERATOR = 'Michael Lazar (michael@mozz.us)'
 WARC_SOFTWARE = f'mozz-archiver/{VERSION} ({PROJECT_URL})'
@@ -30,6 +44,17 @@ EXTENSIONS = {
 
 DOWNLOAD_HANDLERS = {
     'gemini': 'mozz_archiver.downloaders.gemini.GeminiDownloadHandler',
+}
+
+# Disable a bunch of unnecessary middleware for gemini://
+DOWNLOADER_MIDDLEWARES = {
+    'scrapy.downloadermiddlewares.httpauth.HttpAuthMiddleware': None,
+    'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None,
+    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+    'scrapy.downloadermiddlewares.redirect.MetaRefreshMiddleware': None,
+    'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': None,
+    'scrapy.downloadermiddlewares.redirect.RedirectMiddleware': None,
+    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': None,
 }
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
@@ -55,3 +80,5 @@ COOKIES_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
 TELNETCONSOLE_ENABLED = True
+
+MEMDEBUG_ENABLED = True
