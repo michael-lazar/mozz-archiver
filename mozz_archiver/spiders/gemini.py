@@ -1,5 +1,7 @@
 import scrapy
 
+from mozz_archiver.items import GeminiResponseItem
+
 
 class GeminiSpider(scrapy.Spider):
     name = 'gemini'
@@ -34,3 +36,5 @@ class GeminiSpider(scrapy.Spider):
         # Crawl "text/gemini" documents for embedded links
         for request in response.follow_all():
             yield request
+
+        yield GeminiResponseItem.from_response(response)

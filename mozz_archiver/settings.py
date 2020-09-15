@@ -15,7 +15,7 @@ USER_AGENT = f'mozz-archiver (+{PROJECT_URL})'
 ROBOTSTXT_OBEY = True
 
 # Print WARC export to stdout instead of a file
-WARC_DEBUG = True
+WARC_DEBUG = False
 
 # Enable gzip compression on generated WARC files
 WARC_GZIP = False
@@ -39,11 +39,11 @@ WARC_FORMAT = 'WARC file version 1.1'
 WARC_CONFORMS_TO = 'http://iipc.github.io/warc-specifications/specifications/warc-format/warc-1.1/'
 
 EXTENSIONS = {
-    'mozz_archiver.extensions.warc.WARCExporter': 0,
+    'mozz_archiver.extensions.WARCExporter': 0,
 }
 
 DOWNLOAD_HANDLERS = {
-    'gemini': 'mozz_archiver.downloaders.gemini.GeminiDownloadHandler',
+    'gemini': 'mozz_archiver.downloaders.GeminiDownloadHandler',
 }
 
 # Disable a bunch of unnecessary middleware for gemini://

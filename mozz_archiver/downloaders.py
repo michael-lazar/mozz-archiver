@@ -12,7 +12,7 @@ from twisted.internet.ssl import CertificateOptions, TLSVersion
 from twisted.protocols.basic import LineReceiver
 from twisted.protocols.policies import TimeoutMixin
 
-from mozz_archiver.response.gemini import GeminiResponse
+from mozz_archiver.responses import GeminiResponse
 
 logger = logging.getLogger(__name__)
 

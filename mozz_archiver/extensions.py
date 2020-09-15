@@ -1,5 +1,4 @@
 import os
-import io
 import logging
 import sys
 import socket
@@ -7,8 +6,6 @@ from datetime import datetime
 
 from scrapy import signals
 from warcio.warcwriter import WARCWriter
-
-from mozz_archiver.response.gemini import GeminiResponse
 
 
 logger = logging.getLogger(__name__)
@@ -33,7 +30,7 @@ class WARCExporter:
     @classmethod
     def from_crawler(cls, crawler):
         ext = cls(crawler.settings)
-        crawler.signals.connect(ext.response_received, signal=signals.response_received)
+        crawler.signals.connect(ext.item_scraped, signal=signals.item_scraped)
         crawler.signals.connect(ext.engine_stopped, signal=signals.engine_stopped)
         return ext
 
@@ -62,7 +59,11 @@ class WARCExporter:
         """
         if self.debug:
             filename = 'stdout'
-            fp = sys.stdout.buffer
+            try:
+                fp = sys.stdout.buffer
+            except AttributeError:
+                # Scrapinghub wraps stdout with a special logger class
+                fp = sys.stdout
         else:
             directory = self.settings.get('WARC_FILE_DIRECTORY', '.')
             filename = self.build_filename()
@@ -111,31 +112,19 @@ class WARCExporter:
             self._writer.out.close()
             self._writer = None
 
-    def response_received(self, response, request, spider):
-        if not isinstance(response, GeminiResponse):
-            return
-
-        request_payload = io.BytesIO()
-        request_payload.write(response.url.encode('utf-8') + b'\r\n')
-        request_payload.seek(0)
-
-        response_payload = io.BytesIO()
-        response_payload.write(response.gemini_header + b'\r\n')
-        response_payload.write(response.body)
-        response_payload.seek(0)
-
+    def item_scraped(self, item, response, spider):
         request_record = self.writer.create_warc_record(
-            response.url,
+            item['url'],
             'request',
-            payload=request_payload,
+            payload=item.get_request_payload(),
             warc_content_type='application/gemini; msgtype=request',
-            warc_headers_dict={'WARC-IP-Address': response.ip_address},
+            warc_headers_dict={'WARC-IP-Address': item['ip_address']},
         )
         response_record = self.writer.create_warc_record(
-            response.url,
+            item['url'],
             'response',
-            payload=response_payload,
+            payload=item.get_response_payload(),
             warc_content_type='application/gemini; msgtype=response',
-            warc_headers_dict={'WARC-IP-Address': response.ip_address},
+            warc_headers_dict={'WARC-IP-Address': item['ip_address']},
         )
         self.writer.write_request_response_pair(request_record, response_record)
