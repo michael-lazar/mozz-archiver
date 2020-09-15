@@ -15,6 +15,9 @@ class GeminiSpider(scrapy.Spider):
         """
         Parse crawled gemini:// pages.
         """
+        if not response.url.startswith('gemini://'):
+            return
+
         for route in self.static_routes:
             yield response.follow(route)
 
