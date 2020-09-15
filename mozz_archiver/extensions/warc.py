@@ -8,6 +8,9 @@ from datetime import datetime
 from scrapy import signals
 from warcio.warcwriter import WARCWriter
 
+from mozz_archiver.response.gemini import GeminiResponse
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -109,6 +112,8 @@ class WARCExporter:
             self._writer = None
 
     def response_received(self, response, request, spider):
+        if not isinstance(response, GeminiResponse):
+            return
 
         request_payload = io.BytesIO()
         request_payload.write(response.url.encode('utf-8') + b'\r\n')
