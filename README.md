@@ -2,6 +2,8 @@
 
 A crawler for [gemini://](https://gemini.circumlunar.space/)
 
+![Spider Moon](logo.jpg)
+
 ## About
 
 This is a general purpose 
