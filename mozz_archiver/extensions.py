@@ -56,16 +56,12 @@ class WARCExporter:
         """
         Initialize a new WARC file and write the "warcinfo" header.
         """
+        directory = self.settings.get('WARC_FILE_DIRECTORY', '.')
+        filename = self.build_filename()
+
         if self.debug:
-            filename = 'stdout'
-            try:
-                fp = sys.stdout.buffer
-            except AttributeError:
-                # Scrapinghub wraps stdout with a special logger class
-                fp = sys.stdout
+            fp = sys.stdout.buffer
         else:
-            directory = self.settings.get('WARC_FILE_DIRECTORY', '.')
-            filename = self.build_filename()
             fp = open(os.path.join(directory, filename), 'wb')
 
         logger.debug(f"Generating WARC file {filename}")

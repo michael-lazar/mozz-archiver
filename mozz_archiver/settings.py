@@ -15,10 +15,10 @@ USER_AGENT = f'mozz-archiver'
 ROBOTSTXT_OBEY = True
 
 # Print WARC export to stdout instead of a file
-WARC_DEBUG = False
+WARC_DEBUG = True
 
 # Enable gzip compression on generated WARC files
-WARC_GZIP = True
+WARC_GZIP = False
 
 # Max size in bytes of an individual WARC file (for file rotation)
 WARC_FILE_MAX_SIZE = 2014 ** 3  # 1 GB
@@ -33,8 +33,8 @@ WARC_FILE_DIRECTORY = '.'
 WARC_VERSION = "WARC/1.1"
 WARC_OPERATOR = 'Michael Lazar (michael@mozz.us)'
 WARC_SOFTWARE = f'mozz-archiver/{VERSION} ({PROJECT_URL})'
-WARC_IS_PART_OF = None
-WARC_DESCRIPTION = None
+WARC_IS_PART_OF = "testcrawl-20200917"
+WARC_DESCRIPTION = "testcrawl with WARC output"
 WARC_FORMAT = 'WARC file version 1.1'
 WARC_CONFORMS_TO = 'http://iipc.github.io/warc-specifications/specifications/warc-format/warc-1.1/'
 

@@ -8,14 +8,12 @@ logger = logging.getLogger(__name__)
 class GeminiSpider(scrapy.Spider):
     name = 'gemini'
     allowed_domains = []
-    start_urls = ['gemini://gus.guru/known-hosts']
+    start_urls = ['gemini://mozz.us/cgi-bin/fortune']
 
     def parse(self, response, **_):
         """
         Parse crawled gemini:// pages.
         """
-        return
-
         if not response.url.startswith('gemini://'):
             logger.warning(f'Spider received unexpected URL: {response.url}')
             return
