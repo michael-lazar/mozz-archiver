@@ -1,13 +1,12 @@
 import io
-import os
 import logging
-import sys
+import os
 import socket
+import sys
 from datetime import datetime
 
 from scrapy import signals
 from warcio.warcwriter import WARCWriter
-
 
 logger = logging.getLogger(__name__)
 

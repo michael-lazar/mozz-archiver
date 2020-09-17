@@ -1,6 +1,6 @@
 import logging
-import scrapy
 
+import scrapy
 
 logger = logging.getLogger(__name__)
 
