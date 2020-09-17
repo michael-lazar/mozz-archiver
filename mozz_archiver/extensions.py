@@ -1,3 +1,4 @@
+import io
 import os
 import logging
 import sys
@@ -30,8 +31,7 @@ class WARCExporter:
     @classmethod
     def from_crawler(cls, crawler):
         ext = cls(crawler.settings)
-        crawler.signals.connect(ext.item_scraped, signal=signals.item_scraped)
-        crawler.signals.connect(ext.engine_stopped, signal=signals.engine_stopped)
+        crawler.signals.connect(ext.response_received, signal=signals.response_received)
         return ext
 
     @property
@@ -112,19 +112,28 @@ class WARCExporter:
             self._writer.out.close()
             self._writer = None
 
-    def item_scraped(self, item, response, spider):
+    def response_received(self, response, request, spider):
+        request_payload = io.BytesIO()
+        request_payload.write(response.url.encode('utf-8') + b'\r\n')
+        request_payload.seek(0)
+
+        response_payload = io.BytesIO()
+        response_payload.write(response.gemini_header + b'\r\n')
+        response_payload.write(response.body)
+        response_payload.seek(0)
+
         request_record = self.writer.create_warc_record(
-            item['url'],
+            response.url,
             'request',
-            payload=item.get_request_payload(),
+            payload=request_payload,
             warc_content_type='application/gemini; msgtype=request',
-            warc_headers_dict={'WARC-IP-Address': item['ip_address']},
+            warc_headers_dict={'WARC-IP-Address': response.ip_address},
         )
         response_record = self.writer.create_warc_record(
-            item['url'],
+            response.url,
             'response',
-            payload=item.get_response_payload(),
+            payload=response_payload,
             warc_content_type='application/gemini; msgtype=response',
-            warc_headers_dict={'WARC-IP-Address': item['ip_address']},
+            warc_headers_dict={'WARC-IP-Address': response.ip_address},
         )
         self.writer.write_request_response_pair(request_record, response_record)

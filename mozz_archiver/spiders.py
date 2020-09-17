@@ -1,32 +1,30 @@
+import logging
 import scrapy
 
-from mozz_archiver.items import GeminiResponseItem
+
+logger = logging.getLogger(__name__)
 
 
 class GeminiSpider(scrapy.Spider):
     name = 'gemini'
-    allowed_domains = ['mozz.us']
-    start_urls = ['gemini://mozz.us']
-
-    static_routes = [
-        "/robots.txt",
-        "/favicon.txt",
-    ]
+    allowed_domains = []
+    start_urls = ['gemini://gus.guru/known-hosts']
 
     def parse(self, response, **_):
         """
         Parse crawled gemini:// pages.
         """
+        return
+
         if not response.url.startswith('gemini://'):
+            logger.warning(f'Spider received unexpected URL: {response.url}')
             return
 
-        for route in self.static_routes:
-            yield response.follow(route)
+        yield response.follow('/favicon.txt')
 
-        # We're not at the root URL, try going up one directory
+        # Try going up one directory
         parent_url = response.get_parent_url()
-        if parent_url:
-            yield response.follow(parent_url)
+        yield response.follow(parent_url)
 
         # We received a 3x response and need to follow the redirect
         redirect_url = response.get_redirect_url()
@@ -36,5 +34,3 @@ class GeminiSpider(scrapy.Spider):
         # Crawl "text/gemini" documents for embedded links
         for request in response.follow_all():
             yield request
-
-        yield GeminiResponseItem.from_response(response)

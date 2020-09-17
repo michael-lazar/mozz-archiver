@@ -73,10 +73,7 @@ class GeminiResponse(Response):
         path = pathlib.PurePosixPath(parts.path).parent
         url_parts = replace_url_parts(parts, path=str(path), params='', query='', fragment='')
         parent_url = url_parts.geturl()
-        if parent_url != self.url:
-            return parent_url
-        else:
-            return None
+        return parent_url
 
     def get_redirect_url(self):
         if self.gemini_status.startswith('3'):
@@ -84,9 +81,14 @@ class GeminiResponse(Response):
         else:
             return None
 
-    def follow_all(self, urls=None, **kwargs):
+    def follow_all(self, urls=None, gemini_only=True, **kwargs):
         if not urls:
-            urls = [self.urljoin(link) for link in self.get_links()]
+            urls = []
+            for link in self.get_links():
+                url = self.urljoin(link)
+                if not gemini_only or url.startswith('gemini://'):
+                    urls.append(url)
+
         return super().follow_all(urls=urls, **kwargs)
 
     def urljoin(self, link_url):

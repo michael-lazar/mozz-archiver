@@ -9,7 +9,7 @@ SPIDER_MODULES = ['mozz_archiver.spiders']
 NEWSPIDER_MODULE = 'mozz_archiver.spiders'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-USER_AGENT = f'mozz-archiver (+{PROJECT_URL})'
+USER_AGENT = f'mozz-archiver'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
@@ -18,7 +18,7 @@ ROBOTSTXT_OBEY = True
 WARC_DEBUG = False
 
 # Enable gzip compression on generated WARC files
-WARC_GZIP = False
+WARC_GZIP = True
 
 # Max size in bytes of an individual WARC file (for file rotation)
 WARC_FILE_MAX_SIZE = 2014 ** 3  # 1 GB
@@ -64,13 +64,13 @@ CONCURRENT_REQUESTS_PER_IP = 1
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 0
+DOWNLOAD_DELAY = 1
 
 # The maximum response size (in bytes) that downloader will download.
-DOWNLOAD_MAXSIZE = 1073741824  # 1024 MB
+DOWNLOAD_MAXSIZE = 1024 * 1024 * 100  # 100 MB
 
 # The response size (in bytes) that downloader will start to warn.
-DOWNLOAD_WARNSIZE = 33554432  # 32 MB
+DOWNLOAD_WARNSIZE = 1024 * 1024 * 32  # 32 MB
 
 # The amount of time (in secs) that the downloader will wait before timing out.
 DOWNLOAD_TIMEOUT = 60
