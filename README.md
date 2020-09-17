@@ -25,6 +25,13 @@ The following user agents will be respected:
 - ``"*"``
 - ``"mozz-archiver"``
 
+To block all traffic:
+
+```
+User-agent: mozz-archiver
+Disallow: /
+```
+
 Alternatively, you can simply block this crawler's IP address (I won't hold it against you).
 
 If this is not sufficient for your gemini server, send me an email and we can work something out.
