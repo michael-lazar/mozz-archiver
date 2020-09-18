@@ -6,7 +6,7 @@ from urllib.parse import urldefrag, urlparse
 from twisted.internet import reactor
 from twisted.internet.defer import Deferred
 from twisted.internet.endpoints import SSL4ClientEndpoint, connectProtocol
-from twisted.internet.error import ConnectionDone
+from twisted.internet.error import ConnectionDone, ConnectionLost
 from twisted.internet.protocol import connectionDone
 from twisted.internet.ssl import CertificateOptions, TLSVersion
 from twisted.protocols.basic import LineReceiver
@@ -140,7 +140,8 @@ class GeminiClientProtocol(LineReceiver, TimeoutMixin):
 
         self.request.meta['download_latency'] = time.time() - self.start_time
 
-        if reason.check(ConnectionDone):
+        # Many gemini servers kill the connection uncleanly, i.e. ConnectionLost
+        if reason.check(ConnectionDone, ConnectionLost):
             response = self.build_response()
             self.finished.callback(response)
         else:

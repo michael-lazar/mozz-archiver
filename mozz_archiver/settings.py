@@ -3,7 +3,7 @@
 PROJECT_URL = "https://github.com/michael-lazar/mozz-archiver"
 
 BOT_NAME = 'mozz_archiver'
-VERSION = '0.0.1'
+VERSION = '1.0.0'
 
 SPIDER_MODULES = ['mozz_archiver.spiders']
 NEWSPIDER_MODULE = 'mozz_archiver.spiders'
@@ -15,26 +15,26 @@ USER_AGENT = f'mozz-archiver'
 ROBOTSTXT_OBEY = True
 
 # Print WARC export to stdout instead of a file
-WARC_DEBUG = True
+WARC_DEBUG = False
 
 # Enable gzip compression on generated WARC files
-WARC_GZIP = False
+WARC_GZIP = True
 
 # Max size in bytes of an individual WARC file (for file rotation)
-WARC_FILE_MAX_SIZE = 2014 ** 3  # 1 GB
+WARC_FILE_MAX_SIZE = 1024 * 1024 * 1024  # 1 GB
 
 # Prefix to append to the beginning of WARC filenames
-WARC_FILE_PREFIX = 'test'
+WARC_FILE_PREFIX = 'gemini_sept2020'
 
 # Directory to save WARC files
-WARC_FILE_DIRECTORY = '.'
+WARC_FILE_DIRECTORY = '/mnt/volume_nyc1_01/'
 
 # These params will be placed into the generated "warcinfo" record
 WARC_VERSION = "WARC/1.1"
 WARC_OPERATOR = 'Michael Lazar (michael@mozz.us)'
 WARC_SOFTWARE = f'mozz-archiver/{VERSION} ({PROJECT_URL})'
-WARC_IS_PART_OF = "testcrawl-20200917"
-WARC_DESCRIPTION = "testcrawl with WARC output"
+WARC_IS_PART_OF = "gemini-crawl-sept2020"
+WARC_DESCRIPTION = "Geminispace crawl for historical archive"
 WARC_FORMAT = 'WARC file version 1.1'
 WARC_CONFORMS_TO = 'http://iipc.github.io/warc-specifications/specifications/warc-format/warc-1.1/'
 
@@ -64,7 +64,7 @@ CONCURRENT_REQUESTS_PER_IP = 1
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 1
+DOWNLOAD_DELAY = 2
 
 # The maximum response size (in bytes) that downloader will download.
 DOWNLOAD_MAXSIZE = 1024 * 1024 * 100  # 100 MB
