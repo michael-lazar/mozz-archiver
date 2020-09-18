@@ -25,13 +25,20 @@ The following user agents will be respected:
 - ``"*"``
 - ``"mozz-archiver"``
 
+To block all traffic:
+
+```
+User-agent: mozz-archiver
+Disallow: /
+```
+
 Alternatively, you can simply block this crawler's IP address (I won't hold it against you).
 
 If this is not sufficient for your gemini server, send me an email and we can work something out.
 
-## Example Output
+## Examples
 
-### warcinfo
+### Example **warcinfo** record
 
 ```
 WARC/1.1
@@ -55,7 +62,7 @@ format: WARC file version 1.1
 conformsTo: http://iipc.github.io/warc-specifications/specifications/warc-format/warc-1.1/
 ```
 
-### request
+### Example **request** record
 
 ```
 WARC/1.1
@@ -73,7 +80,7 @@ Content-Length: 34
 gemini://mozz.us/cgi-bin/fortune
 ```
 
-### response
+### Example **response** record
 
 ```
 WARC/1.1
