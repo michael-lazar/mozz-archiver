@@ -18,7 +18,7 @@ ROBOTSTXT_OBEY = True
 WARC_DEBUG = False
 
 # Enable gzip compression on generated WARC files
-WARC_GZIP = True
+WARC_GZIP = False
 
 # Max size in bytes of an individual WARC file (for file rotation)
 WARC_FILE_MAX_SIZE = 1024 * 1024 * 1024  # 1 GB
@@ -38,9 +38,9 @@ WARC_DESCRIPTION = "Geminispace crawl for historical archive"
 WARC_FORMAT = 'WARC file version 1.1'
 WARC_CONFORMS_TO = 'http://iipc.github.io/warc-specifications/specifications/warc-format/warc-1.1/'
 
-EXTENSIONS = {
-    'mozz_archiver.extensions.WARCExporter': 0,
-}
+# EXTENSIONS = {
+#     'mozz_archiver.extensions.WARCExporter': 0,
+# }
 
 DOWNLOAD_HANDLERS = {
     'gemini': 'mozz_archiver.downloaders.GeminiDownloadHandler',
@@ -64,7 +64,7 @@ CONCURRENT_REQUESTS_PER_IP = 1
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 2
+DOWNLOAD_DELAY = 1
 
 # The maximum response size (in bytes) that downloader will download.
 DOWNLOAD_MAXSIZE = 1024 * 1024 * 100  # 100 MB
@@ -82,3 +82,12 @@ COOKIES_ENABLED = False
 TELNETCONSOLE_ENABLED = True
 
 MEMDEBUG_ENABLED = True
+
+# Enable breadth-first crawl order
+DEPTH_PRIORITY = 1
+SCHEDULER_DISK_QUEUE = 'scrapy.squeues.PickleFifoDiskQueue'
+SCHEDULER_MEMORY_QUEUE = 'scrapy.squeues.FifoMemoryQueue'
+
+REACTOR_THREADPOOL_MAXSIZE = 30
+
+DNS_RESOLVER = "mozz_archiver.resolvers.HostnameResolver"

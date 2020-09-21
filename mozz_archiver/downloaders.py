@@ -5,10 +5,11 @@ from urllib.parse import urldefrag, urlparse
 
 from twisted.internet import reactor
 from twisted.internet.defer import Deferred
-from twisted.internet.endpoints import SSL4ClientEndpoint, connectProtocol
+from twisted.internet.endpoints import SSL4ClientEndpoint, connectProtocol, HostnameEndpoint, wrapClientTLS
 from twisted.internet.error import ConnectionDone, ConnectionLost
 from twisted.internet.protocol import connectionDone
 from twisted.internet.ssl import CertificateOptions, TLSVersion
+from twisted.internet._sslverify import ClientTLSOptions
 from twisted.protocols.basic import LineReceiver
 from twisted.protocols.policies import TimeoutMixin
 
@@ -60,14 +61,15 @@ class GeminiDownloadHandler:
         remote_host = bindaddress or parts.hostname
         remote_port = parts.port or 1965
 
-        endpoint = SSL4ClientEndpoint(
-            reactor,
-            remote_host,
-            remote_port,
-            self.context_factory,
-            timeout=10
-        )
+        hostname = HostnameEndpoint(reactor, remote_host, remote_port)
+        # The recommended helper method for this (optionsForClientTLS) does not
+        # allow setting up a client context that accepts unverified certificates.
+        # So we are forced to use the private ClientTLSOptions method instead.
+        options = ClientTLSOptions(remote_host, self.context_factory.getContext())
+        # noinspection PyTypeChecker
+        endpoint = wrapClientTLS(options, hostname)
 
+        logger.debug(f"Creating download request for {request.url}")
         protocol = GeminiClientProtocol(request, maxsize, warnsize, timeout)
         connectProtocol(endpoint, protocol)
         return protocol.finished
@@ -108,10 +110,13 @@ class GeminiClientProtocol(LineReceiver, TimeoutMixin):
         self.transport.abortConnection()
 
     def lineReceived(self, line):
+        logger.debug(f"Line received, {self.request.url}")
         self.response_header = line
         self.setRawMode()
 
     def rawDataReceived(self, data):
+        logger.debug(f"Data received ({len(data)}), {self.request.url}")
+
         self.response_body.write(data)
         self.response_size += len(data)
 
@@ -133,6 +138,8 @@ class GeminiClientProtocol(LineReceiver, TimeoutMixin):
             )
 
     def connectionLost(self, reason=connectionDone):
+        logger.debug(f"Connection lost ({reason}), {self.request.url}")
+
         self.setTimeout(None)
 
         if self.finished.called:
