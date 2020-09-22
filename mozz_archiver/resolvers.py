@@ -41,7 +41,12 @@ class CachingHostnameResolver:
         self.reactor.installNameResolver(self)
 
     def resolveHostName(
-        self, resolutionReceiver, hostName, portNumber=0, addressTypes=None, transportSemantics="TCP"
+        self,
+        resolutionReceiver,
+        hostName,
+        portNumber=0,
+        addressTypes=None,
+        transportSemantics="TCP",
     ):
 
         cached_addresses = dnscache.get(hostName)
