@@ -90,4 +90,4 @@ SCHEDULER_MEMORY_QUEUE = 'scrapy.squeues.FifoMemoryQueue'
 
 REACTOR_THREADPOOL_MAXSIZE = 30
 
-DNS_RESOLVER = "mozz_archiver.resolvers.HostnameResolver"
+DNS_RESOLVER = "mozz_archiver.resolvers.CachingHostnameResolver"
