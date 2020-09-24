@@ -148,8 +148,12 @@ class GeminiClientProtocol(LineReceiver, TimeoutMixin):
 
         # Many gemini servers kill the connection uncleanly, i.e. ConnectionLost
         if reason.check(ConnectionDone, ConnectionLost):
-            response = self.build_response()
-            self.finished.callback(response)
+            try:
+                response = self.build_response()
+            except Exception:
+                self.finished.errback()
+            else:
+                self.finished.callback(response)
         else:
             self.finished.errback(reason)
 
