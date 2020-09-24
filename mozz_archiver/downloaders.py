@@ -71,7 +71,12 @@ class GeminiDownloadHandler:
 
         logger.debug(f"Creating download request for {request.url}")
         protocol = GeminiClientProtocol(request, maxsize, warnsize, timeout)
-        connectProtocol(endpoint, protocol)
+
+        # If the connection fails (DNS lookup, etc.) propagate the error so
+        # that scrapy knows the request has completed.
+        connected = connectProtocol(endpoint, protocol)
+        connected.addErrback(protocol.finished.errback)
+
         return protocol.finished
 
 
