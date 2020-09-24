@@ -59,8 +59,9 @@ class GeminiResponse(Response):
         if self.is_gemini_map:
             for line in self.text.splitlines(keepends=False):
                 if line.startswith('=>'):
-                    link = line[2:].strip().split(maxsplit=1)[0]
-                    yield link
+                    link_parts = line[2:].strip().split(maxsplit=1)
+                    if link_parts:
+                        yield link_parts[0]
 
     def get_parent_url(self):
         """
