@@ -4,12 +4,21 @@
 #
 #    pip-compile requirements.in
 #
+accesscontrol==4.2        # via documenttemplate, zope
+acquisition==4.6          # via accesscontrol, documenttemplate, zope
 attrs==20.2.0             # via automat, service-identity, twisted
+authencoding==4.1         # via accesscontrol
 automat==20.2.0           # via twisted
-cffi==1.14.2              # via cryptography
+beautifulsoup4==4.9.1     # via webtest, zope.testbrowser
+btrees==4.7.2             # via accesscontrol, zodb, zope, zope.container
+cffi==1.14.2              # via cryptography, persistent
+chameleon==3.8.1          # via z3c.pt, zope
 constantly==15.1.0        # via twisted
 cryptography==3.1         # via pyopenssl, scrapy, service-identity
 cssselect==1.1.0          # via parsel, scrapy
+datetime==4.3             # via accesscontrol, zope
+documenttemplate==3.3     # via zope
+extensionclass==4.4       # via accesscontrol, acquisition, documenttemplate, multimapping, persistence, zope
 hyperlink==20.0.1         # via twisted
 idna==2.10                # via hyperlink
 incremental==17.5.0       # via twisted
@@ -17,7 +26,11 @@ itemadapter==0.1.0        # via itemloaders, scrapy
 itemloaders==1.0.3        # via scrapy
 jmespath==0.10.0          # via itemloaders
 lxml==4.5.2               # via parsel, scrapy
+multimapping==4.1         # via zope
 parsel==1.6.0             # via itemloaders, scrapy
+pastedeploy==2.1.0        # via zope
+persistence==3.0          # via accesscontrol, zope
+persistent==4.6.4         # via btrees, persistence, zodb, zope.container
 protego==0.1.16           # via scrapy
 pyasn1-modules==0.2.8     # via service-identity
 pyasn1==0.4.8             # via pyasn1-modules, service-identity
@@ -25,14 +38,71 @@ pycparser==2.20           # via cffi
 pydispatcher==2.0.5       # via scrapy
 pyhamcrest==2.0.2         # via twisted
 pyopenssl==19.1.0         # via scrapy
+python-gettext==4.0       # via zope.i18n
+pytz==2020.1              # via datetime, zope.i18n, zope.testbrowser
 queuelib==1.5.0           # via scrapy
+restrictedpython==5.0     # via accesscontrol, documenttemplate, zope
+roman==3.3                # via documenttemplate
 scrapy==2.3.0             # via -r requirements.in
 service-identity==18.1.0  # via scrapy
-six==1.15.0               # via automat, cryptography, parsel, protego, pyopenssl, w3lib, warcio
+six==1.15.0               # via accesscontrol, authencoding, automat, cryptography, documenttemplate, parsel, persistence, protego, pyopenssl, w3lib, warcio, webtest, wsgiproxy2, z3c.pt, zodb, zope, zope.browsermenu, zope.container, zope.i18nmessageid, zope.pagetemplate, zope.publisher, zope.tales, zope.testbrowser, zope.traversing
+soupsieve==2.0.1          # via beautifulsoup4, zope.testbrowser
+transaction==3.0.0        # via accesscontrol, zodb, zope, zope.traversing
 twisted==20.3.0           # via -r requirements.in, scrapy
 w3lib==1.22.0             # via itemloaders, parsel, scrapy
+waitress==1.4.4           # via webtest, zope
 warcio==1.7.4             # via -r requirements.in
-zope.interface==5.1.0     # via scrapy, twisted
+webob==1.8.6              # via webtest, wsgiproxy2
+webtest==2.0.35           # via zope.testbrowser
+wsgiproxy2==0.4.6         # via zope.testbrowser
+z3c.pt==3.3.0             # via zope
+zc.lockfile==2.0          # via zodb
+zconfig==3.5.0            # via zodb, zope
+zexceptions==4.1          # via accesscontrol, documenttemplate, zope
+zodb==5.6.0               # via zope
+zodbpickle==2.0.0         # via zodb
+zope.annotation==4.7.0    # via zope.site
+zope.browser==2.3         # via zope, zope.browsermenu, zope.publisher
+zope.browsermenu==4.4     # via zope
+zope.browserpage==4.4.0   # via zope, zope.viewlet
+zope.browserresource==4.4  # via zope, zope.ptresource
+zope.cachedescriptors==4.3.1  # via zope.container, zope.testbrowser
+zope.component==4.6.2     # via accesscontrol, z3c.pt, zope, zope.annotation, zope.browsermenu, zope.browserpage, zope.browserresource, zope.container, zope.contentprovider, zope.i18n, zope.pagetemplate, zope.publisher, zope.security, zope.site, zope.traversing, zope.viewlet
+zope.configuration==4.4.0  # via accesscontrol, zope, zope.browsermenu, zope.browserpage, zope.browserresource, zope.i18n, zope.publisher, zope.viewlet
+zope.container==4.4.0     # via zope, zope.site
+zope.contentprovider==4.2.1  # via z3c.pt, zope, zope.viewlet
+zope.contenttype==4.5.0   # via zope, zope.browserresource, zope.publisher
+zope.deferredimport==4.3.1  # via accesscontrol, zope, zope.component
+zope.deprecation==4.4.0   # via zope.component, zope.i18n, zope.site
+zope.dottedname==4.3      # via zope.container
+zope.event==4.5.0         # via zope, zope.component, zope.container, zope.contentprovider, zope.lifecycleevent, zope.publisher, zope.schema, zope.site, zope.viewlet
+zope.exceptions==4.4      # via zope, zope.publisher
+zope.filerepresentation==5.0.0  # via zope.container
+zope.globalrequest==1.5   # via zope
+zope.hookable==5.0.1      # via zope.component
+zope.i18n[zcml]==4.7.0    # via z3c.pt, zope, zope.browserresource, zope.pagetemplate, zope.publisher, zope.traversing
+zope.i18nmessageid==5.0.1  # via zope, zope.browsermenu, zope.configuration, zope.container, zope.i18n, zope.pagetemplate, zope.security, zope.size, zope.tal, zope.traversing, zope.viewlet
+zope.interface==5.1.0     # via accesscontrol, acquisition, btrees, datetime, persistent, scrapy, transaction, twisted, z3c.pt, zexceptions, zodb, zope, zope.annotation, zope.browser, zope.browsermenu, zope.browserpage, zope.browserresource, zope.component, zope.configuration, zope.container, zope.contentprovider, zope.exceptions, zope.filerepresentation, zope.globalrequest, zope.lifecycleevent, zope.location, zope.pagetemplate, zope.processlifetime, zope.proxy, zope.ptresource, zope.publisher, zope.schema, zope.security, zope.site, zope.size, zope.tal, zope.tales, zope.testbrowser, zope.traversing, zope.viewlet
+zope.lifecycleevent==4.3  # via zope, zope.container, zope.site
+zope.location==4.2        # via zope, zope.annotation, zope.browserresource, zope.container, zope.contentprovider, zope.publisher, zope.security, zope.site, zope.traversing, zope.viewlet
+zope.pagetemplate==4.5.0  # via zope, zope.browsermenu, zope.browserpage, zope.ptresource
+zope.processlifetime==2.3.0  # via zope
+zope.proxy==4.3.5         # via zope, zope.annotation, zope.container, zope.deferredimport, zope.location, zope.publisher, zope.security, zope.traversing
+zope.ptresource==4.2.0    # via zope
+zope.publisher==5.2.1     # via accesscontrol, zexceptions, zope, zope.browsermenu, zope.browserpage, zope.browserresource, zope.container, zope.contentprovider, zope.globalrequest, zope.ptresource, zope.traversing, zope.viewlet
+zope.schema==6.0.0        # via accesscontrol, zope, zope.browsermenu, zope.browserpage, zope.browserresource, zope.configuration, zope.container, zope.contentprovider, zope.filerepresentation, zope.i18n, zope.location, zope.security, zope.testbrowser, zope.viewlet
+zope.security==5.1.1      # via accesscontrol, zexceptions, zope, zope.browsermenu, zope.browserpage, zope.container, zope.i18n, zope.ptresource, zope.publisher, zope.site, zope.traversing, zope.viewlet
+zope.sequencesort==4.1.2  # via documenttemplate, zope
+zope.site==4.4.0          # via zope
+zope.size==4.3            # via zope, zope.container
+zope.structuredtext==4.3  # via documenttemplate
+zope.tal==4.4             # via zope, zope.browserpage, zope.pagetemplate
+zope.tales==5.1           # via zope, zope.contentprovider, zope.pagetemplate
+zope.testbrowser==5.5.1   # via zope
+zope.testing==4.7         # via accesscontrol, zope
+zope.traversing==4.4.1    # via z3c.pt, zope, zope.browsermenu, zope.browserpage, zope.browserresource, zope.container, zope.globalrequest, zope.pagetemplate, zope.viewlet
+zope.viewlet==4.2.1       # via zope
+zope==4.5.1               # via -r requirements.in
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

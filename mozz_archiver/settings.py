@@ -3,7 +3,7 @@
 PROJECT_URL = "https://github.com/michael-lazar/mozz-archiver"
 
 BOT_NAME = 'mozz_archiver'
-VERSION = '1.0.0'
+VERSION = '1.1.0'
 
 SPIDER_MODULES = ['mozz_archiver.spiders']
 NEWSPIDER_MODULE = 'mozz_archiver.spiders'
@@ -18,7 +18,7 @@ ROBOTSTXT_OBEY = True
 WARC_DEBUG = False
 
 # Enable gzip compression on generated WARC files
-WARC_GZIP = False
+WARC_GZIP = True
 
 # Max size in bytes of an individual WARC file (for file rotation)
 WARC_FILE_MAX_SIZE = 1024 * 1024 * 1024  # 1 GB
@@ -38,9 +38,9 @@ WARC_DESCRIPTION = "Geminispace crawl for historical archive"
 WARC_FORMAT = 'WARC file version 1.1'
 WARC_CONFORMS_TO = 'http://iipc.github.io/warc-specifications/specifications/warc-format/warc-1.1/'
 
-# EXTENSIONS = {
-#     'mozz_archiver.extensions.WARCExporter': 0,
-# }
+EXTENSIONS = {
+    'mozz_archiver.extensions.WARCExporter': 0,
+}
 
 DOWNLOAD_HANDLERS = {
     'gemini': 'mozz_archiver.downloaders.GeminiDownloadHandler',
@@ -59,7 +59,7 @@ DOWNLOADER_MIDDLEWARES = {
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 CONCURRENT_REQUESTS = 16
-CONCURRENT_REQUESTS_PER_IP = 1
+CONCURRENT_REQUESTS_PER_DOMAIN = 1
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
@@ -91,3 +91,13 @@ SCHEDULER_MEMORY_QUEUE = 'scrapy.squeues.FifoMemoryQueue'
 REACTOR_THREADPOOL_MAXSIZE = 30
 
 DNS_RESOLVER = "mozz_archiver.resolvers.CachingHostnameResolver"
+
+LOG_ENABLED = True
+LOG_FILE = "crawl.log"
+
+JOBDIR = f"crawls/{WARC_IS_PART_OF}"
+
+TELNETCONSOLE_USERNAME = "scrapy"
+TELNETCONSOLE_PASSWORD = "password"
+
+SCHEDULER_PRIORITY_QUEUE = "scrapy.pqueues.DownloaderAwarePriorityQueue"
