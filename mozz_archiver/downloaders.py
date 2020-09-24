@@ -3,13 +3,13 @@ import time
 from io import BytesIO
 from urllib.parse import urldefrag, urlparse
 
+from scrapy.core.downloader.tls import ScrapyClientTLSOptions
 from twisted.internet import reactor
 from twisted.internet.defer import Deferred
 from twisted.internet.endpoints import connectProtocol, HostnameEndpoint, wrapClientTLS
 from twisted.internet.error import ConnectionDone, ConnectionLost
 from twisted.internet.protocol import connectionDone
 from twisted.internet.ssl import CertificateOptions, TLSVersion
-from twisted.internet._sslverify import ClientTLSOptions
 from twisted.protocols.basic import LineReceiver
 from twisted.protocols.policies import TimeoutMixin
 
@@ -65,7 +65,7 @@ class GeminiDownloadHandler:
         # The recommended helper method for this (optionsForClientTLS) does not
         # allow setting up a client context that accepts unverified certificates.
         # So we are forced to use the private ClientTLSOptions method instead.
-        options = ClientTLSOptions(remote_host, self.context_factory.getContext())
+        options = ScrapyClientTLSOptions(remote_host, self.context_factory.getContext())
         # noinspection PyTypeChecker
         endpoint = wrapClientTLS(options, hostname)
 
