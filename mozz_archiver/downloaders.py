@@ -5,7 +5,7 @@ from urllib.parse import urldefrag, urlparse
 
 from twisted.internet import reactor
 from twisted.internet.defer import Deferred
-from twisted.internet.endpoints import SSL4ClientEndpoint, connectProtocol, HostnameEndpoint, wrapClientTLS
+from twisted.internet.endpoints import connectProtocol, HostnameEndpoint, wrapClientTLS
 from twisted.internet.error import ConnectionDone, ConnectionLost
 from twisted.internet.protocol import connectionDone
 from twisted.internet.ssl import CertificateOptions, TLSVersion
@@ -110,13 +110,12 @@ class GeminiClientProtocol(LineReceiver, TimeoutMixin):
         self.transport.abortConnection()
 
     def lineReceived(self, line):
-        logger.debug(f"Line received, {self.request.url}")
+        logger.debug(f"{self.request.url}: Line received")
         self.response_header = line
         self.setRawMode()
 
     def rawDataReceived(self, data):
-        logger.debug(f"Data received ({len(data)}), {self.request.url}")
-
+        logger.debug(f"{self.request.url}: Data received ({len(data)})")
         self.response_body.write(data)
         self.response_size += len(data)
 
@@ -138,8 +137,7 @@ class GeminiClientProtocol(LineReceiver, TimeoutMixin):
             )
 
     def connectionLost(self, reason=connectionDone):
-        logger.debug(f"Connection lost ({reason}), {self.request.url}")
-
+        logger.debug(f"{self.request.url}: Connection lost ({reason.value})")
         self.setTimeout(None)
 
         if self.finished.called:
