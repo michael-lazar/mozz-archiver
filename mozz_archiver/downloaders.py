@@ -115,7 +115,8 @@ class GeminiClientProtocol(LineReceiver, TimeoutMixin):
         self.setRawMode()
 
     def rawDataReceived(self, data):
-        logger.debug(f"{self.request.url}: Data received ({len(data)})")
+        if not self.response_size:
+            logger.debug(f"{self.request.url}: Data received ({len(data)})")
         self.response_body.write(data)
         self.response_size += len(data)
 
