@@ -1,8 +1,12 @@
+import logging
 import os
 import pathlib
 from urllib.parse import urlparse
 
 from scrapy.http import Response
+
+
+logger = logging.getLogger(__name__)
 
 
 def replace_url_parts(parts, **kwargs):
@@ -40,7 +44,11 @@ class GeminiResponse(Response):
 
             if meta.startswith('text/'):
                 charset = params.get('charset', 'utf-8')
-                self._text = self.body.decode(charset)
+                try:
+                    self._text = self.body.decode(charset)
+                except Exception as e:
+                    logger.warning(e)
+                    self._text = ""
 
             if meta.startswith('text/gemini'):
                 self.is_gemini_map = True
