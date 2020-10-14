@@ -107,6 +107,13 @@ class WARCExporter:
             self._writer.out.close()
             self._writer = None
 
+    def build_warc_metadata_payload(self, metadata):
+        payload = io.BytesIO()
+        for key, val in metadata.items():
+            payload.write(f"{key}: {val}\r\n".encode('utf-8'))
+        payload.seek(0)
+        return payload
+
     def response_received(self, response, request, spider):
         request_payload = io.BytesIO()
         request_payload.write(response.url.encode('utf-8') + b'\r\n')
@@ -117,13 +124,15 @@ class WARCExporter:
         response_payload.write(response.body)
         response_payload.seek(0)
 
-        request_record = self.writer.create_warc_record(
-            response.url,
-            'request',
-            payload=request_payload,
-            warc_content_type='application/gemini; msgtype=request',
-            warc_headers_dict={'WARC-IP-Address': response.ip_address},
-        )
+        metadata = {
+            'fetchTimeMs': int(response.meta["download_latency"] * 1000),
+        }
+        referrer = request.headers.get('Referer')
+        if referrer is not None:
+            metadata['via'] = referrer.decode()
+
+        metadata_payload = self.build_warc_metadata_payload(metadata)
+
         response_record = self.writer.create_warc_record(
             response.url,
             'response',
@@ -131,4 +140,22 @@ class WARCExporter:
             warc_content_type='application/gemini; msgtype=response',
             warc_headers_dict={'WARC-IP-Address': response.ip_address},
         )
+        request_record = self.writer.create_warc_record(
+            response.url,
+            'request',
+            payload=request_payload,
+            warc_content_type='application/gemini; msgtype=request',
+            warc_headers_dict={'WARC-IP-Address': response.ip_address},
+        )
         self.writer.write_request_response_pair(request_record, response_record)
+
+        metadata_record = self.writer.create_warc_record(
+            response.url,
+            'metadata',
+            payload=metadata_payload,
+            warc_headers_dict={
+                'WARC-Date': response_record.rec_headers.get_header('WARC-Date'),
+                'WARC-Concurrent-To': response_record.rec_headers.get_header('WARC-Record-ID')
+            },
+        )
+        self.writer.write_record(metadata_record)
