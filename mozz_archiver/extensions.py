@@ -41,11 +41,8 @@ class WARCExporter:
         if not self._writer:
             self._writer = self.build_writer()
 
-        if self.debug:
-            return self._writer
-
         max_file_size = self.settings.getint('WARC_FILE_MAX_SIZE')
-        if max_file_size and self._writer.out.tell() > max_file_size:
+        if not self.debug and max_file_size and self._writer.out.tell() > max_file_size:
             self.serial += 1
             self._writer.out.close()
             self._writer = self.build_writer()
@@ -124,15 +121,6 @@ class WARCExporter:
         response_payload.write(response.body)
         response_payload.seek(0)
 
-        metadata = {
-            'fetchTimeMs': int(response.meta["download_latency"] * 1000),
-        }
-        referrer = request.headers.get('Referer')
-        if referrer is not None:
-            metadata['via'] = referrer.decode()
-
-        metadata_payload = self.build_warc_metadata_payload(metadata)
-
         response_record = self.writer.create_warc_record(
             response.url,
             'response',
@@ -149,13 +137,22 @@ class WARCExporter:
         )
         self.writer.write_request_response_pair(request_record, response_record)
 
-        metadata_record = self.writer.create_warc_record(
-            response.url,
-            'metadata',
-            payload=metadata_payload,
-            warc_headers_dict={
-                'WARC-Date': response_record.rec_headers.get_header('WARC-Date'),
-                'WARC-Concurrent-To': response_record.rec_headers.get_header('WARC-Record-ID')
-            },
-        )
-        self.writer.write_record(metadata_record)
+        if self.settings.getbool('WARC_WRITE_METADATA', 'False'):
+            metadata = {
+                'fetchTimeMs': int(response.meta["download_latency"] * 1000),
+            }
+            referrer = request.headers.get('Referer')
+            if referrer is not None:
+                metadata['via'] = referrer.decode()
+
+            metadata_payload = self.build_warc_metadata_payload(metadata)
+            metadata_record = self.writer.create_warc_record(
+                response.url,
+                'metadata',
+                payload=metadata_payload,
+                warc_headers_dict={
+                    'WARC-Date': response_record.rec_headers.get_header('WARC-Date'),
+                    'WARC-Concurrent-To': response_record.rec_headers.get_header('WARC-Record-ID')
+                },
+            )
+            self.writer.write_record(metadata_record)
