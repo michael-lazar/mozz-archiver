@@ -64,7 +64,7 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 1
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 1
+DOWNLOAD_DELAY = 2
 
 # The maximum response size (in bytes) that downloader will download.
 DOWNLOAD_MAXSIZE = 1024 * 1024 * 100  # 100 MB
