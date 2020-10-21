@@ -36,7 +36,6 @@ WARC_WRITE_METADATA = False
 WARC_VERSION = "WARC/1.1"
 WARC_OPERATOR = 'Michael Lazar (michael@mozz.us)'
 WARC_SOFTWARE = f'mozz-archiver/{VERSION} ({PROJECT_URL})'
-WARC_IS_PART_OF = ""
 WARC_DESCRIPTION = "Geminispace crawl for historical archive"
 WARC_FORMAT = 'WARC file version 1.1'
 WARC_CONFORMS_TO = 'http://iipc.github.io/warc-specifications/specifications/warc-format/warc-1.1/'
@@ -98,7 +97,7 @@ DNS_RESOLVER = "mozz_archiver.resolvers.CachingHostnameResolver"
 LOG_ENABLED = True
 LOG_FILE = None
 
-JOBDIR = None
+JOBDIR = f"crawls/demo"
 
 TELNETCONSOLE_USERNAME = "scrapy"
 TELNETCONSOLE_PASSWORD = "password"
