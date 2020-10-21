@@ -122,12 +122,19 @@ class GeminiResponse(Response):
             # If netloc is unspecified, use the netloc of the current page
             link_parts = replace_url_parts(link_parts, netloc=base_parts.netloc)
 
-        if link_parts.port == 1965:
-            # Drop the default port from URLs to prevent double-scraping the
-            # same resource with and without the port number. Technically, there
-            # could be some scenarios where explicitly adding the port to the
-            # URL fetches a different response, but I haven't seen any of these.
-            link_parts = replace_url_parts(link_parts, port=None)
+        try:
+            port = link_parts.port
+        except ValueError:
+            # Will raise an error if the URL has an invalid port
+            pass
+        else:
+            if port == 1965:
+                # Drop the default port from URLs to prevent double-scraping the
+                # same resource with and without the port number. Technically, there
+                # could be some scenarios where explicitly adding the port to the
+                # URL fetches a different response, but I haven't seen any of these.
+                netloc = link_parts.netloc.rsplit(":", maxsplit=1)[-1]
+                link_parts = replace_url_parts(link_parts, netloc=netloc)
 
         if link_parts.path:
             root_path = pathlib.PurePosixPath(base_parts.path)
