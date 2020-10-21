@@ -32,3 +32,9 @@ class GeminiSpider(scrapy.Spider):
         # Crawl "text/gemini" documents for embedded links
         for request in response.follow_all():
             yield request
+
+
+class GeminiSpiderProd(GeminiSpider):
+    name = 'gemini-prod'
+    allowed_domains = []
+    start_urls = ['gemini://gus.guru/known-hosts']
