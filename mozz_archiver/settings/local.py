@@ -15,10 +15,10 @@ USER_AGENT = f'archiver-mozz'
 ROBOTSTXT_OBEY = True
 
 # Print WARC export to stdout instead of a file
-WARC_DEBUG = True
+WARC_DEBUG = False
 
 # Enable gzip compression on generated WARC files
-WARC_GZIP = False
+WARC_GZIP = True
 
 # Max size in bytes of an individual WARC file (for file rotation)
 WARC_FILE_MAX_SIZE = 1_000_000_000  # 1 GB
@@ -66,7 +66,7 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 1
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 2
+DOWNLOAD_DELAY = 0
 
 # The maximum response size (in bytes) that downloader will download.
 DOWNLOAD_MAXSIZE = 100_000_000  # 100 MB
@@ -102,4 +102,4 @@ JOBDIR = f"crawls/demo"
 TELNETCONSOLE_USERNAME = "scrapy"
 TELNETCONSOLE_PASSWORD = "password"
 
-SCHEDULER_PRIORITY_QUEUE = "scrapy.pqueues.DownloaderAwarePriorityQueue"
+SCHEDULER = "mozz_archiver.scheduler.Scheduler"

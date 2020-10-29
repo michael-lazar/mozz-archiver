@@ -7,8 +7,8 @@ logger = logging.getLogger(__name__)
 
 class GeminiSpider(scrapy.Spider):
     name = 'gemini'
-    allowed_domains = ["mozz.us"]
-    start_urls = ['gemini://mozz.us']
+    allowed_domains = ["localhost"]
+    start_urls = ['gemini://localhost']
 
     def parse(self, response, **_):
         """
