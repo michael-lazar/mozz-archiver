@@ -66,7 +66,7 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 1
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 0
+DOWNLOAD_DELAY = 2
 
 # The maximum response size (in bytes) that downloader will download.
 DOWNLOAD_MAXSIZE = 100_000_000  # 100 MB
@@ -103,3 +103,5 @@ TELNETCONSOLE_USERNAME = "scrapy"
 TELNETCONSOLE_PASSWORD = "password"
 
 SCHEDULER = "mozz_archiver.scheduler.Scheduler"
+
+DUPEFILTER_DEBUG = False

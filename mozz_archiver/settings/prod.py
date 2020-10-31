@@ -8,3 +8,4 @@ WARC_IS_PART_OF = "gemini-crawl-oct2020"
 
 LOG_FILE = "crawl.log"
 JOBDIR = f"crawls/{WARC_IS_PART_OF}"
+DUPEFILTER_DEBUG = False
