@@ -50,6 +50,7 @@ DOWNLOAD_HANDLERS = {
 
 # Disable a bunch of unnecessary middleware for gemini://
 DOWNLOADER_MIDDLEWARES = {
+    'mozz_archiver.middleware.URLDenyMiddleware': 50,
     'scrapy.downloadermiddlewares.httpauth.HttpAuthMiddleware': None,
     'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': None,
     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
@@ -105,3 +106,5 @@ TELNETCONSOLE_PASSWORD = "password"
 SCHEDULER = "mozz_archiver.scheduler.Scheduler"
 
 DUPEFILTER_DEBUG = False
+
+URL_DENY_LIST = []
