@@ -10,5 +10,6 @@ LOG_FILE = "crawl.log"
 JOBDIR = f"crawls/{WARC_IS_PART_OF}"
 
 URL_DENY_LIST = [
-    "gemini://gemini.spam.works/mirrors/textfiles/",
+    "gemini://gemini.spam.works/mirrors/textfiles/",  # Mirror of www.textfiles.com
+    "gemini://fkfd.me/git/cgi/",  # git frontend, very slow to respond
 ]
