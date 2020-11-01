@@ -11,6 +11,7 @@ JOBDIR = f"crawls/{WARC_IS_PART_OF}"
 
 URL_DENY_LIST = [
     "gemini://gemini.spam.works/mirrors/textfiles/",  # Mirror of www.textfiles.com
+    "gemini://gemini.spam.works?]////",  # Infinite redirect
     "gemini://fkfd.me/git/cgi/",  # git frontend, very slow to respond
     "gemini://git.fkfd.me/cgi/",  # git frontend, very slow to respond
     "gemini://gemini.conman.org/test/redirhell",  # I need to fix my crawler...
