@@ -34,6 +34,7 @@ import logging
 from scrapy.utils.misc import load_object, create_instance
 from scrapy.utils.reqser import request_to_dict, request_from_dict
 from scrapy.pqueues import DownloaderInterface
+from scrapy.exceptions import IgnoreRequest
 from scrapy import signals
 
 logger = logging.getLogger(__name__)
@@ -75,7 +76,7 @@ class Scheduler(object):
         self.crawler = crawler
 
         crawler.signals.connect(
-            self.on_download, signal=signals.request_left_downloader
+            self.on_request_left_downloader, signal=signals.request_left_downloader
         )
 
     @staticmethod
@@ -186,10 +187,29 @@ class Scheduler(object):
         request = self.decode_request(request_data)
         self.stats.inc_value('scheduler/dequeued/sqlite', spider=self.spider)
 
+        # Stash the row id so we can delete the request from the table once it
+        # has either finished downloading or raised an exception.
         request.row_id = row_id
+
+        # If a request is rejected by the downloader middleware, it will never
+        # reach the downloader to trigger the request left downloader signal.
+        # One solution would be to add a custom DownloaderMiddleware that
+        # implemented the process_exception() method and triggered a custom
+        # signal. This solution is slightly more hacky, but accomplished the
+        # same thing without needing any extra custom classes.
+        assert request.errback is None
+        request.errback = self.on_request_error
+
         return request
 
-    def on_download(self, request, spider):
+    def on_request_error(self, failure):
+        if failure.check(IgnoreRequest):
+            self.remove_request(failure.request)
+
+    def on_request_left_downloader(self, request, *_):
+        self.remove_request(request)
+
+    def remove_request(self, request):
         if hasattr(request, 'row_id'):
             self.conn.execute(
                 'DELETE FROM "scheduler" WHERE rowid=?', (request.row_id,)
