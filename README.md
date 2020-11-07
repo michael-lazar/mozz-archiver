@@ -119,4 +119,4 @@ This software is not currently licensed for public distribution.
 
 All rights reserved until I figure out what I want to do with it.
 
-Copyright (c) 2020 michael-lazar
+Copyright (c) 2020 Michael Lazar
