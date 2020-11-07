@@ -1,0 +1,136 @@
+#!/usr/bin/env python3
+"""
+Build a searchable sqlite index for a gemini WARC archive.
+
+The index will store the WARC filename and byte offset for each request URL, so
+they can be efficiently loaded from the archive on demand. It will also
+reference error messages from the scrapy download logs to indicate if a request
+couldn't be downloaded because of something like a robots.txt rule or a
+connection error.
+"""
+import argparse
+import sqlite3
+import pathlib
+import re
+from urllib.parse import urlparse
+
+from warcio.archiveiterator import ArchiveIterator
+
+
+class Indexer:
+
+    TABLE_SQL = """
+    CREATE TABLE IF NOT EXISTS requests (
+        url TEXT,
+        netloc TEXT,
+        warc_offset INTEGER,
+        warc_length INTEGER,
+        warc_filename TEXT,
+        response_status TEXT,
+        response_meta TEXT,
+        error_message TEXT
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS request_url_index ON requests (url);
+    """
+
+    # Regular expressions for parsing the scrapy log
+    RE_BLOCKLIST = re.compile("DEBUG: Forbidden by URL deny list: <GET (?P<url>.+)>")
+    RE_ROBOTSTXT = re.compile(r"DEBUG: Forbidden by robots\.txt: <GET (?P<url>.+)>")
+    RE_TIMEOUT = re.compile(r"ERROR: Getting <GET (?P<url>.+)> took longer than 60\.0 seconds")
+    RE_MAXSIZE = re.compile("larger than download max size ([0-9]+) in request <GET (?P<url>.+)>")
+    RE_ERROR = re.compile("ERROR: Error downloading <GET (?P<url>.+)>: (?P<message>.+)")
+    RE_MULTILINE_START = re.compile("ERROR: Error downloading <GET (?P<url>.+)>$")
+    RE_MULTILINE_END = re.compile("^[A-Za-z.]+: (?P<message>.+)")
+
+    def __init__(self, index_db):
+        self.conn = sqlite3.connect(index_db, isolation_level=None)
+        self.conn.row_factory = sqlite3.Row
+        self.conn.executescript(self.TABLE_SQL)
+
+    def index_request(self, record, iterator, filename):
+        url = record.rec_headers.get_header("WARC-Target-URI")
+        print(url)
+
+        netloc = urlparse(url).netloc
+        header = record.content_stream().readline().decode('utf-8')
+        parts = header.strip().split(maxsplit=1)
+        if len(parts) == 0:
+            status, meta = None, None
+        elif len(parts) == 1:
+            status, meta = parts[0], None
+        else:
+            status, meta = parts[0], parts[1]
+
+        warc_length = iterator.get_record_length()
+        warc_offset = iterator.get_record_offset()
+        warc_filename = filename
+
+        self.conn.execute(
+            "INSERT OR REPLACE INTO requests VALUES (?,?,?,?,?,?,?,?);",
+            (url, netloc, warc_offset, warc_length, warc_filename, status, meta, None),
+        )
+
+    def index_error(self, url, error_message):
+        print(f"<{url}> {error_message}")
+
+        # If we have a successful response, don't overwrite it with an error
+        c = self.conn.cursor()
+        c.execute("SELECT * FROM requests WHERE url=? AND error_message IS NULL;", (url,))
+        if c.fetchone():
+            return
+
+        self.conn.execute(
+            "INSERT OR REPLACE INTO requests(url, error_message) VALUES (?,?)",
+            (url, error_message),
+        )
+
+    def process_logfile(self, logfile):
+        traceback_url = None
+        with logfile.open('r') as fp:
+            for line in fp:
+                if traceback_url:
+                    # We're in the middle of a multi-line traceback message
+                    if match := self.RE_MULTILINE_END.search(line):
+                        error_message = f'Error: {match.group("message")}'
+                        self.index_error(traceback_url, error_message)
+                        traceback_url = None
+                elif match := self.RE_MULTILINE_START.search(line):
+                    # We're at the start of a multi-line traceback message
+                    traceback_url = match.group("url")
+                elif match := self.RE_BLOCKLIST.search(line):
+                    self.index_error(match.group('url'), "URL forbidden by block list")
+                elif match := self.RE_ROBOTSTXT.search(line):
+                    self.index_error(match.group('url'), "URL forbidden by robots.txt")
+                elif match := self.RE_MAXSIZE.search(line):
+                    self.index_error(match.group('url'), "Download exceeded max size of 100 MB")
+                elif match := self.RE_TIMEOUT.search(line):
+                    self.index_error(match.group('url'), "Download timed out after 60 seconds")
+                elif match := self.RE_ERROR.search(line):
+                    self.index_error(match.group('url'), f"Error: {match.group('message')}")
+
+    def process_warc_dir(self, warc_dir):
+        files = sorted(warc_dir.glob("*.warc.gz"))
+        for file in files:
+            with file.open('rb') as fp:
+                iterator = ArchiveIterator(fp)
+                for record in iterator:
+                    if record.rec_type == "response":
+                        self.index_request(record, iterator, file.name)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Create an sqlite index for WARC data")
+    parser.add_argument('--warc-dir', help="Directory containing the WARC files")
+    parser.add_argument('--crawl-logfile', help="Directory containing the scrapy log file")
+    parser.add_argument('--index-db', required=True, help="Sqlite database file to write to")
+    args = parser.parse_args()
+
+    indexer = Indexer(args.index_db)
+
+    if args.warc_dir:
+        warc_dir = pathlib.Path(args.warc_dir).resolve()
+        indexer.process_warc_dir(warc_dir)
+
+    if args.crawl_logfile:
+        logfile = pathlib.Path(args.crawl_logfile).resolve()
+        indexer.process_logfile(logfile)
