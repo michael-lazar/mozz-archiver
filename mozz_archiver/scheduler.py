@@ -27,14 +27,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 import os
+import hashlib
 import sqlite3
 import pickle
 import logging
 
-from scrapy.utils.misc import load_object, create_instance
 from scrapy.utils.reqser import request_to_dict, request_from_dict
 from scrapy.pqueues import DownloaderInterface
 from scrapy.exceptions import IgnoreRequest
+from scrapy.dupefilters import RFPDupeFilter
 from scrapy import signals
 
 logger = logging.getLogger(__name__)
@@ -51,6 +52,19 @@ CREATE TABLE IF NOT EXISTS "scheduler" (
 CREATE INDEX IF NOT EXISTS request_state_index
     ON "scheduler" (downloading, slot, priority);
 """
+
+
+class GeminiDupeFilter(RFPDupeFilter):
+    """
+    Custom dupefilter that generates unique SHAs for gemini URLs.
+
+    Necessary because I don't want to apply the same canonicalize method that
+    scrapy uses for HTTP requests.
+    """
+    def request_fingerprint(self, request):
+        fp = hashlib.sha1()
+        fp.update(request.url.encode('utf-8'))
+        return fp.hexdigest()
 
 
 class Scheduler(object):
@@ -90,8 +104,7 @@ class Scheduler(object):
     def from_crawler(cls, crawler):
         settings = crawler.settings
 
-        dupefilter_cls = load_object(settings['DUPEFILTER_CLASS'])
-        dupefilter = create_instance(dupefilter_cls, settings, crawler)
+        dupefilter = GeminiDupeFilter.from_settings(settings)
 
         jobdir = settings.get('JOBDIR')
         if jobdir:
