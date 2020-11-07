@@ -150,6 +150,11 @@ class Scheduler(object):
         return request_from_dict(request_dict, self.spider)
 
     def enqueue_request(self, request):
+
+        # First remove the request from the scheduler in-case we're
+        # re-enqueuing after something like a connection timeout retry
+        self.remove_request(request)
+
         request_data = self.encode_request(request)
         slot = self.downloader_interface.get_slot_key(request)
 
@@ -223,7 +228,9 @@ class Scheduler(object):
         self.remove_request(request)
 
     def remove_request(self, request):
+        request.errback = None
         if hasattr(request, 'row_id'):
             self.conn.execute(
                 'DELETE FROM "scheduler" WHERE rowid=?', (request.row_id,)
             )
+            del request.row_id
