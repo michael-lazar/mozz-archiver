@@ -1,3 +1,7 @@
+#!/usr/bin/env python3
+"""
+A simple gemini server that will proxy all requests to a gemini archive.
+"""
 import sqlite3
 import argparse
 import pathlib
@@ -8,24 +12,27 @@ from warcio.archiveiterator import ArchiveIterator
 from jetforce import GeminiServer, Status
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--warc-dir', default="warc")
-parser.add_argument('--index', default="index.sqlite")
+parser.add_argument('--warc-dir', required=True, help="Directory containing the WARC files")
+parser.add_argument('--index-db', required=True, help="WARC index file")
 args = parser.parse_args()
 
-conn = sqlite3.connect(args.index, isolation_level=None)
+warc_dir = pathlib.Path(args.warc_dir).resolve()
+assert warc_dir.is_dir()
+
+conn = sqlite3.connect(args.index_db, isolation_level=None)
 conn.row_factory = sqlite3.Row
 
-warc_dir = pathlib.Path(args.warc_dir).resolve()
+c = conn.execute('SELECT COUNT(*) FROM requests')
+url_count = c.fetchone()[0]
+print(f'Loaded WARC index with {url_count} URLs')
 
 
 def proxy_request(environ, send_status):
     url = environ['GEMINI_URL']
 
-    # Attempt some URL normalization, but don't fail if the URL is malformed
+    # Attempt URL canonization
     try:
         url_parts = urlparse(url)
-        if url_parts.path == "/":
-            url = url.strip("/")
         if url_parts.port == 1965:
             url = url.replace(":1965", "", 1)
     except Exception:
@@ -51,10 +58,5 @@ def proxy_request(environ, send_status):
             yield data
 
 
-if __name__ == "__main__":
-    c = conn.execute('SELECT COUNT(*) FROM requests')
-    result = c.fetchone()
-    print(f'Loaded WARC index with {result[0]} entries')
-
-    server = GeminiServer(proxy_request)
-    server.run()
+server = GeminiServer(proxy_request)
+server.run()
