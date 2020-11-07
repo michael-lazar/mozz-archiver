@@ -27,7 +27,11 @@ class GeminiSpider(scrapy.Spider):
         # We received a 3x response and need to follow the redirect
         redirect_url = response.get_redirect_url()
         if redirect_url:
-            yield response.follow(redirect_url)
+            redirects = response.request.meta.get('redirects', 0) + 1
+            if redirects > 6:
+                logger.warning(f'Spider reached maximum redirects (6) for URL: {redirect_url}')
+            else:
+                yield response.follow(redirect_url, meta={'redirects': redirects})
 
         # Crawl "text/gemini" documents for embedded links
         for request in response.follow_all():
