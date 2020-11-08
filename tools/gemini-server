@@ -2,6 +2,7 @@
 """
 A simple gemini server that will proxy all requests to a gemini archive.
 """
+import time
 import sqlite3
 import argparse
 import pathlib
@@ -47,6 +48,13 @@ def proxy_request(environ, send_status):
     if row['error_message']:
         send_status(Status.PROXY_ERROR, f"ARCHIVE-ERROR: {row['error_message']}")
         return
+
+    # Don't use send_status() for mirrored responses to preserve the accuracy
+    # of the response header format. Because we aren't using send_status(), we
+    # need to manually generate the access log.
+    client_addr = environ['REMOTE_ADDR']
+    timestamp = time.strftime("%d/%b/%Y:%H:%M:%S %z", time.localtime())
+    server.log_access(f'{client_addr} [{timestamp}] "{url}" <MIRRORED>')
 
     warc_file = warc_dir / row['warc_filename']
     with warc_file.open("rb") as fp:
