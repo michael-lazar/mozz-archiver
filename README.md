@@ -36,6 +36,38 @@ Alternatively, you can simply block this crawler's IP address (I won't hold it a
 
 If this is not sufficient for your gemini server, send me an email and we can work something out.
 
+## Viewing the Archive
+
+I have included a minimal gemini server that can be used to mirror an existing WARC archive.
+This is accomplished by leveraging the "proxy" feature of the gemini protocol. The server will
+listen for any *gemini://* URL, and will then attempt to return the recorded response from the
+archive.
+
+In order to run the server, you first need to build an index of the archive. The index is an
+sqlite table that keeps track of the byte offset for each request/response pair inside of the
+WARC file. The scrapy logfile can also be ingested into the index, which will attach information
+to request URLs that failed because of robots.txt exclusion rules or other connection errors.
+
+First build the index file:
+
+```
+$ tools/index-archive --warc-dir /path/to/warc/files/ -crawl-logfile /path/to/crawl.log --index-db index.sqlite
+```
+
+Then launch the server:
+
+```
+$ tools/gemini-server --warc-dir /path/to/warc/files/ --index-db index.sqlite
+```
+
+Connect using any gemini client that can handle proxy requests:
+
+```
+# Send the requested URL to the server running on localhost:1965
+$ jetforce-client --host localhost --port 1965 "gemini://mozz.us"
+```
+
+
 ## Examples
 
 ### Example **warcinfo** record
