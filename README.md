@@ -60,7 +60,7 @@ Then launch the server:
 $ tools/gemini-server --warc-dir /path/to/warc/files/ --index-db index.sqlite
 ```
 
-Connect using any gemini client that can handle proxy requests:
+Connect to it using any gemini client that can handle proxy requests:
 
 ```
 # Send the requested URL to the server running on localhost:1965
