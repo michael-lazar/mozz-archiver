@@ -36,6 +36,18 @@ Alternatively, you can simply block this crawler's IP address (I won't hold it a
 
 If this is not sufficient for your gemini server, send me an email and we can work something out.
 
+## Installation
+
+This software requires python 3.8 or higher.
+
+It is recommended (although not required!) to install dependencies inside of a virtual environment.
+
+```
+python3 -m virtualenv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
 ## Viewing the Archive
 
 I have included a minimal gemini server that can be used to mirror an existing WARC archive.
