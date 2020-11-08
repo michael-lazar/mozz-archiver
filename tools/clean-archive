@@ -28,7 +28,7 @@ class ArchiveWriter:
         self.extension = ".warc.gz"
         self.serial = 0
         self.max_filesize = 1_000_000_000  # 1 GB
-        self.prefix = "gemini_oct2020"
+        self.prefix = "gemini_nov2020"
         self.crawlhost = "mozz"
         self.warcinfo = {
             "hostname": "mozz.us",
@@ -37,7 +37,7 @@ class ArchiveWriter:
             "robots": "classic",
             "operator": "Michael Lazar (michael@mozz.us)",
             "software": "mozz-archiver/1.1.0 (https://github.com/michael-lazar/mozz-archiver)",
-            "isPartOf": "gemini-crawl-oct2020",
+            "isPartOf": "gemini-crawl-nov2020",
             "description": "Geminispace crawl for historical archive",
             "format": "WARC file version 1.1",
             "conformsTo": "http://iipc.github.io/warc-specifications/specifications/warc-format/warc-1.1/"
@@ -82,16 +82,8 @@ class ArchiveWriter:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Post process a multi-file WARC archive")
-    parser.add_argument(
-        'warc-dir',
-        required=True,
-        help="Directory containing the WARC files"
-    )
-    parser.add_argument(
-        'out-dir',
-        required=True,
-        help="Directory that generated WARC files will be written to"
-    )
+    parser.add_argument('warc_dir', help="Directory containing the WARC files")
+    parser.add_argument('out_dir', help="Directory that generated WARC files will be written to")
     args = parser.parse_args()
 
     warc_dir = pathlib.Path(args.warc_dir).resolve()
