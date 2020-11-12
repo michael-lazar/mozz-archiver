@@ -159,8 +159,6 @@ Content-Length: 758
 
 ## License
 
-This software is not currently licensed for public distribution. 
-
-All rights reserved until I figure out what I want to do with it.
-
 Copyright (c) 2020 Michael Lazar
+
+[Blue Oak Model License v1.0.0](https://blueoakcouncil.org/license/1.0.0)

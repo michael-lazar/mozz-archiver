@@ -3,9 +3,9 @@ This custom sqlite scheduler backend is derived from:
 https://github.com/filyph/scrapy-sqlite
 
 Modified work, Copyright (c) 2020 Michael Lazar
-Original work, Copyright (c) 2017 Filip Hanes
+Modified work is distributed under Blue Oak Model License 1.0.0.
 
-Modified work is not licensed, all rights reserved.
+Original work, Copyright (c) 2017 Filip Hanes
 Original work is distributed under the following license.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
