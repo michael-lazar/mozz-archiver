@@ -79,6 +79,12 @@ Connect to it using any gemini client that can handle proxy requests:
 $ jetforce-client --host localhost --port 1965 "gemini://mozz.us"
 ```
 
+You can also print out some statistics about the contents of the archive:
+
+```
+$ tools/display-stats index.sqlite
+```
+
 
 ## Examples
 
