@@ -1,0 +1,60 @@
+#!/usr/bin/env python3
+"""
+Display some statistics for an archive based on the generated index file.
+"""
+import argparse
+import sqlite3
+
+parser = argparse.ArgumentParser(description="Display statistics for an index file")
+parser.add_argument('index_db')
+args = parser.parse_args()
+
+conn = sqlite3.connect(args.index_db, isolation_level=None)
+conn.row_factory = sqlite3.Row
+
+print(f"Parsing index database {args.index_db}...")
+print("")
+
+c = conn.execute("SELECT COUNT() FROM requests")
+total = c.fetchone()[0]
+print(f"Total Attempted       : {total}")
+
+c = conn.execute("SELECT COUNT() FROM requests WHERE error_message IS NULL")
+success = c.fetchone()[0]
+print(f"Total Successful      : {success}")
+
+c = conn.execute("SELECT COUNT() FROM requests WHERE error_message IS NOT NULL")
+failed = c.fetchone()[0]
+print(f"Total Failed          : {failed}")
+
+c = conn.execute("SELECT COUNT(DISTINCT netloc) FROM requests WHERE netloc IS NOT NULL")
+domains = c.fetchone()[0]
+print(f"Total Domains Crawled : {domains}")
+
+print("")
+print("1. Successful Response Codes")
+print("")
+print("Count   Code")
+print("-----   ----")
+c = conn.execute("SELECT response_status, COUNT() FROM requests WHERE response_status IS NOT NULL GROUP BY response_status ORDER BY COUNT() DESC")
+for row in c:
+    print(f"{row[1]:<8}{row[0]}")
+
+
+print("")
+print("2. Failed Request Reasons")
+print("")
+print("Count   Error Message")
+print("-----   -------------")
+c = conn.execute("SELECT error_message, COUNT() FROM requests WHERE error_message IS NOT NULL GROUP BY error_message ORDER BY COUNT() DESC")
+for row in c:
+    print(f"{row[1]:<8}{row[0]}")
+
+print("")
+print("3. Crawled URLs by domain")
+print("")
+print("Count   Domain")
+print("-----   ------")
+c = conn.execute("SELECT netloc, COUNT() FROM requests WHERE netloc IS NOT NULL GROUP BY netloc ORDER BY COUNT() DESC")
+for row in c:
+    print(f"{row[1]:<8}{row[0]}")
