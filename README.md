@@ -165,6 +165,6 @@ Content-Length: 758
 
 ## License
 
-Copyright (c) 2020 Michael Lazar
-
 [Blue Oak Model License v1.0.0](https://blueoakcouncil.org/license/1.0.0)
+
+Copyright (c) 2020 Michael Lazar
