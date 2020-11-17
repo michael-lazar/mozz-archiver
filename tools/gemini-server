@@ -15,6 +15,7 @@ from jetforce import GeminiServer, Status
 parser = argparse.ArgumentParser()
 parser.add_argument('--warc-dir', required=True, help="Directory containing the WARC files")
 parser.add_argument('--index-db', required=True, help="WARC index file")
+parser.add_argument('--hostname', default="localhost", help="Server hostname")
 parser.add_argument('--host', default="127.0.0.1", help="Host to run the server on")
 parser.add_argument('--port', default=1965, type=int, help="Port to run the server on")
 args = parser.parse_args()
@@ -68,5 +69,5 @@ def proxy_request(environ, send_status):
             yield data
 
 
-server = GeminiServer(proxy_request, host=args.host, port=args.port)
+server = GeminiServer(proxy_request, host=args.host, port=args.port, hostname=args.hostname)
 server.run()
