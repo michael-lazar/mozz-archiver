@@ -12,7 +12,7 @@ The objective of this project is to archive geminispace for historical preservat
 
 All crawled pages are saved using the [WARC/1.1](https://iipc.github.io/warc-specifications/specifications/warc-format/warc-1.1/) file format. The resulting archive will be made publicly available.
 
-**Update: Archive is [now online](ARCHIVE.md)!**
+**Update: Archive is [now online](NOTES.md)!**
 
 ## How to restrict access
 
