@@ -13,6 +13,7 @@ Each crawl is slightly different as bugs were discovered and the crawling softwa
 Crawl           | September  | October    | November
 ---             | ---        | ---        | ---
 Date            | 2020-09-24 | 2020-10-31 | 2020-11-07
+Size            | 9.3 GB     | 12.9 GB    | 13.5 GB
 Domains seen    | 283        | 276        | 314
 Total Responses | 51,995     | 71,632     | 65,347
 2x Responses    | 43,425     | 61,771     | 56,680
