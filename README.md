@@ -1,17 +1,18 @@
 # mozz-archiver
 
-A crawler for [gemini://](https://gemini.circumlunar.space/)
+A project to archive [gemini://](https://gemini.circumlunar.space/)
 
 ![Spider Moon](logo.jpg)
 
 ## About
 
-This is a general purpose 
-crawler for geminispace built using [Scrapy](https://docs.scrapy.org/en/latest/index.html) and some elbow grease.
+This is a general purpose crawler for geminispace built using [Scrapy](https://docs.scrapy.org/en/latest/index.html) and some elbow grease.
 
 The objective of this project is to archive geminispace for historical preservation.
 
 All crawled pages are saved using the [WARC/1.1](https://iipc.github.io/warc-specifications/specifications/warc-format/warc-1.1/) file format. The resulting archive will be made publicly available.
+
+**Update: Archive is [now online](NOTES.md)!**
 
 ## How to restrict access
 
@@ -77,6 +78,12 @@ Connect to it using any gemini client that can handle proxy requests:
 ```
 # Send the requested URL to the server running on localhost:1965
 $ jetforce-client --host localhost --port 1965 "gemini://mozz.us"
+```
+
+You can also print out some statistics about the contents of the archive:
+
+```
+$ tools/display-stats index.sqlite
 ```
 
 
@@ -159,6 +166,6 @@ Content-Length: 758
 
 ## License
 
-Copyright (c) 2020 Michael Lazar
-
 [Blue Oak Model License v1.0.0](https://blueoakcouncil.org/license/1.0.0)
+
+Copyright (c) 2020 Michael Lazar
