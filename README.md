@@ -1,17 +1,18 @@
 # mozz-archiver
 
-A crawler for [gemini://](https://gemini.circumlunar.space/)
+A project to archive [gemini://](https://gemini.circumlunar.space/)
 
 ![Spider Moon](logo.jpg)
 
 ## About
 
-This is a general purpose 
-crawler for geminispace built using [Scrapy](https://docs.scrapy.org/en/latest/index.html) and some elbow grease.
+This is a general purpose crawler for geminispace built using [Scrapy](https://docs.scrapy.org/en/latest/index.html) and some elbow grease.
 
 The objective of this project is to archive geminispace for historical preservation.
 
 All crawled pages are saved using the [WARC/1.1](https://iipc.github.io/warc-specifications/specifications/warc-format/warc-1.1/) file format. The resulting archive will be made publicly available.
+
+**Update: Archive is [now online](ARCHIVE.md)!**
 
 ## How to restrict access
 
